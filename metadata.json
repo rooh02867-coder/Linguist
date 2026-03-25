@@ -1,0 +1,5 @@
+{
+  "name": "Linguist Audio Transcriber",
+  "description": "Advanced audio transcription and translation engine powered by Gemini AI. Upload audio files to transcribe, detect language, and translate with high accuracy.",
+  "requestFramePermissions": ["microphone"]
+}
