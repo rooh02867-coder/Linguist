@@ -146,228 +146,231 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] text-[#111827] font-sans selection:bg-blue-100">
-      {/* Header */}
-      <header className="border-b border-gray-200 bg-white sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Languages className="text-white w-5 h-5" />
-            </div>
-            <h1 className="font-bold text-xl tracking-tight">Linguist</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            {(file || result) && (
-              <button 
-                onClick={clearAll}
-                className="text-xs font-semibold text-gray-500 hover:text-gray-900 transition-colors px-3 py-1.5 rounded-lg hover:bg-gray-100"
-              >
-                Clear All
-              </button>
-            )}
-            <select 
-              value={targetLanguage}
-              onChange={(e) => setTargetLanguage(e.target.value)}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
-            >
-              {LANGUAGES.map(lang => (
-                <option key={lang.value} value={lang.value}>{lang.label}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen font-sans selection:bg-orange-500/30">
+      {/* Background Atmosphere */}
+      <div className="atmosphere" />
 
-      <main className="max-w-5xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          
-          {/* Left Column: Input */}
-          <div className="lg:col-span-5 space-y-8">
-            <section>
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-4">Input Source</h2>
-              <div className="space-y-4">
-                <div 
-                  {...getRootProps()} 
+      <main className="relative z-10 max-w-4xl mx-auto px-6 py-12 md:py-20">
+        {/* Header */}
+        <header className="mb-16 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-4 gradient-text">
+              Linguist Audio
+            </h1>
+            <p className="text-white/50 text-lg md:text-xl font-light tracking-wide max-w-xl mx-auto">
+              Advanced audio transcription and translation powered by Gemini.
+            </p>
+          </motion.div>
+        </header>
+
+        <div className="grid gap-8">
+          {/* Controls Section */}
+          <motion.section
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className="glass-card rounded-3xl p-8 md:p-12 overflow-hidden relative"
+          >
+            {/* Language Selection */}
+            <div className="flex flex-wrap items-center justify-between gap-6 mb-12">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
+                  <Languages className="w-5 h-5 text-orange-500" />
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-widest text-white/40 font-semibold">Target Language</p>
+                  <select
+                    value={targetLanguage}
+                    onChange={(e) => setTargetLanguage(e.target.value)}
+                    className="bg-transparent text-white text-lg font-medium focus:outline-none cursor-pointer hover:text-orange-400 transition-colors"
+                  >
+                    {LANGUAGES.map((lang) => (
+                      <option key={lang.value} value={lang.value} className="bg-[#1a1a1a]">
+                        {lang.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {file && (
+                <button
+                  onClick={clearAll}
+                  className="text-white/40 hover:text-white text-xs uppercase tracking-widest font-semibold transition-colors"
+                >
+                  Clear All
+                </button>
+              )}
+            </div>
+
+            {/* Upload Area */}
+            <AnimatePresence mode="wait">
+              {!file ? (
+                <motion.div
+                  key="dropzone"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  {...getRootProps()}
                   className={cn(
-                    "border-2 border-dashed rounded-2xl p-8 transition-all cursor-pointer flex flex-col items-center justify-center text-center gap-4",
-                    isDragActive ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-gray-400 bg-white",
-                    file && "border-green-500 bg-green-50"
+                    "relative group cursor-pointer rounded-2xl border-2 border-dashed transition-all duration-500 py-16 px-8 text-center",
+                    isDragActive ? "border-orange-500 bg-orange-500/5" : "border-white/10 hover:border-white/20 hover:bg-white/5"
                   )}
                 >
                   <input {...getInputProps()} />
-                  {file ? (
-                    <>
-                      <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                        <CheckCircle2 className="text-green-600 w-6 h-6" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">{file.name}</p>
-                        <p className="text-xs text-gray-500 mt-1">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                        <Upload className="text-gray-400 w-6 h-6" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">Drop audio here or click to browse</p>
-                        <p className="text-xs text-gray-500 mt-1">Supports MP3, WAV, M4A, etc.</p>
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <div className="h-px flex-1 bg-gray-200" />
-                  <span className="text-xs font-medium text-gray-400 uppercase">or</span>
-                  <div className="h-px flex-1 bg-gray-200" />
-                </div>
-
-                <button
-                  onClick={isRecording ? stopRecording : startRecording}
-                  className={cn(
-                    "w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-semibold transition-all shadow-sm",
-                    isRecording 
-                      ? "bg-red-50 text-red-600 border border-red-200 hover:bg-red-100" 
-                      : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
-                  )}
-                >
-                  {isRecording ? (
-                    <>
-                      <Square className="w-5 h-5 fill-current" />
-                      Stop Recording
-                    </>
-                  ) : (
-                    <>
-                      <Mic className="w-5 h-5" />
-                      Record Audio
-                    </>
-                  )}
-                </button>
-              </div>
-            </section>
-
-            <button
-              onClick={processAudio}
-              disabled={!file || isProcessing}
-              className={cn(
-                "w-full py-4 rounded-2xl font-bold text-white shadow-lg transition-all flex items-center justify-center gap-2",
-                !file || isProcessing 
-                  ? "bg-gray-400 cursor-not-allowed" 
-                  : "bg-blue-600 hover:bg-blue-700 active:scale-[0.98]"
-              )}
-            >
-              {isProcessing ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                "Transcribe & Translate"
-              )}
-            </button>
-
-            {error && (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-4 bg-red-50 border border-red-100 rounded-xl flex gap-3 items-start"
-              >
-                <AlertCircle className="text-red-500 w-5 h-5 shrink-0 mt-0.5" />
-                <p className="text-sm text-red-700">{error}</p>
-              </motion.div>
-            )}
-          </div>
-
-          {/* Right Column: Results */}
-          <div className="lg:col-span-7">
-            <AnimatePresence mode="wait">
-              {result ? (
-                <motion.div
-                  key="result"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  className="space-y-8"
-                >
-                  <section>
-                    <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-500">Original Transcript</h2>
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-1 bg-gray-100 rounded text-[10px] font-bold text-gray-600 uppercase tracking-tight">
-                          {result.detected_language}
-                        </span>
-                        <button 
-                          onClick={() => copyToClipboard(result.original_transcript)}
-                          className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-600 transition-colors"
-                        >
-                          <Copy className="w-4 h-4" />
-                        </button>
-                      </div>
+                  <div className="flex flex-col items-center gap-6">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-orange-500 blur-2xl opacity-0 group-hover:opacity-20 transition-opacity" />
+                      <Upload className="w-12 h-12 text-white/20 group-hover:text-orange-500 transition-colors relative z-10" />
                     </div>
-                    <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm min-h-[120px]">
-                      <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
-                        {result.original_transcript}
-                      </p>
+                    <div>
+                      <p className="text-xl font-medium mb-2">Drop audio here or browse</p>
+                      <p className="text-white/40 text-sm">WAV, MP3, M4A up to 20MB</p>
                     </div>
-                  </section>
-
-                  <section>
-                    <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-500">Translated Transcript</h2>
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-1 bg-blue-50 rounded text-[10px] font-bold text-blue-600 uppercase tracking-tight">
-                          {result.target_language}
-                        </span>
-                        <button 
-                          onClick={() => copyToClipboard(result.translated_transcript)}
-                          className="p-1.5 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-600 transition-colors"
-                        >
-                          <Copy className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                    <div className="bg-white border border-blue-100 rounded-2xl p-6 shadow-sm min-h-[120px] ring-1 ring-blue-50">
-                      <p className="text-gray-900 leading-relaxed font-medium whitespace-pre-wrap">
-                        {result.translated_transcript}
-                      </p>
-                    </div>
-                  </section>
+                  </div>
                 </motion.div>
               ) : (
                 <motion.div
-                  key="placeholder"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="h-full min-h-[400px] border-2 border-dashed border-gray-200 rounded-3xl flex flex-col items-center justify-center text-center p-12"
+                  key="file-ready"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex flex-col items-center gap-8 py-8"
                 >
-                  <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mb-6">
-                    <FileAudio className="text-gray-300 w-8 h-8" />
+                  <div className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 w-full max-w-md">
+                    <div className="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center">
+                      <FileAudio className="w-6 h-6 text-orange-500" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{file.name}</p>
+                      <p className="text-xs text-white/40">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                    </div>
+                    <CheckCircle2 className="w-5 h-5 text-green-500" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Ready to process</h3>
-                  <p className="text-gray-500 max-w-xs">
-                    Upload an audio file or record your voice to see the transcription and translation here.
-                  </p>
+
+                  <button
+                    onClick={processAudio}
+                    disabled={isProcessing}
+                    className="glow-button w-full max-w-md bg-orange-500 text-white font-bold py-5 rounded-2xl flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+                  >
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="w-6 h-6 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 className="w-6 h-6" />
+                        Transcribe & Translate
+                      </>
+                    )}
+                  </button>
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
-        </div>
-      </main>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-200 py-8 mt-12">
-        <div className="max-w-5xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-gray-500">
-            Powered by Gemini 3 Flash • High Accuracy Transcription
-          </p>
-          <div className="flex items-center gap-6">
-            <a href="#" className="text-xs font-medium text-gray-400 hover:text-gray-600">Privacy Policy</a>
-            <a href="#" className="text-xs font-medium text-gray-400 hover:text-gray-600">Terms of Service</a>
-          </div>
+            {/* Recording Button */}
+            <div className="mt-12 flex justify-center">
+              <button
+                onClick={isRecording ? stopRecording : startRecording}
+                disabled={isProcessing}
+                className={cn(
+                  "flex items-center gap-3 px-8 py-4 rounded-full border transition-all duration-500",
+                  isRecording 
+                    ? "bg-red-500/10 border-red-500 text-red-500 recording-pulse" 
+                    : "bg-white/5 border-white/10 text-white hover:bg-white/10"
+                )}
+              >
+                {isRecording ? (
+                  <>
+                    <Square className="w-5 h-5 fill-current" />
+                    <span className="font-bold tracking-widest uppercase text-xs">Stop Recording</span>
+                  </>
+                ) : (
+                  <>
+                    <Mic className="w-5 h-5" />
+                    <span className="font-bold tracking-widest uppercase text-xs">Record Audio</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </motion.section>
+
+          {/* Error Message */}
+          <AnimatePresence>
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="bg-red-500/10 border border-red-500/20 rounded-2xl p-6 flex items-start gap-4"
+              >
+                <AlertCircle className="w-6 h-6 text-red-500 shrink-0" />
+                <p className="text-red-200 text-sm leading-relaxed">{error}</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Results Section */}
+          <AnimatePresence>
+            {result && (
+              <motion.section
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="grid md:grid-cols-2 gap-6"
+              >
+                {/* Original Transcript */}
+                <div className="glass-card rounded-3xl p-8 relative group">
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <p className="text-[10px] uppercase tracking-widest text-white/40 font-semibold">Original Transcript</p>
+                      <p className="text-xs text-orange-500 font-medium">{result.detected_language}</p>
+                    </div>
+                    <button
+                      onClick={() => copyToClipboard(result.original_transcript)}
+                      className="p-2 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 transition-all"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <p className="text-xl leading-relaxed font-serif text-white/90">
+                    {result.original_transcript}
+                  </p>
+                </div>
+
+                {/* Translated Transcript */}
+                <div className="glass-card rounded-3xl p-8 relative group border-orange-500/20">
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <p className="text-[10px] uppercase tracking-widest text-white/40 font-semibold">Translation</p>
+                      <p className="text-xs text-orange-500 font-medium">{result.target_language}</p>
+                    </div>
+                    <button
+                      onClick={() => copyToClipboard(result.translated_transcript)}
+                      className="p-2 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-white hover:bg-white/10 transition-all"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <p className="text-xl leading-relaxed font-serif text-white/90">
+                    {result.translated_transcript}
+                  </p>
+                </div>
+              </motion.section>
+            )}
+          </AnimatePresence>
         </div>
-      </footer>
+
+        {/* Footer */}
+        <footer className="mt-20 text-center">
+          <p className="text-white/20 text-xs uppercase tracking-[0.2em] font-medium">
+            Powered by Gemini 3 Flash • Full Stack Architecture
+          </p>
+        </footer>
+      </main>
     </div>
   );
 }
